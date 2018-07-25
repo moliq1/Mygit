@@ -2,6 +2,28 @@ import os
 import cv2
 import matplotlib.pyplot as plt 
 
+
+def read_dcm_to_array(file_dir, min_hu=-1150, max_hu=350, normalize=True):
+    reader = sitk.ImageSeriesReader()
+    filenames = reader.GetGDCMSeriesFileNames(file_dir)
+    reader.SetFileNames(filenames)
+    sitk_image = reader.Execute()
+    numpy_image = sitk.GetArrayFromImage(sitk_image)
+    if normalize:
+        numpy_image = normalize_image(numpy_image)
+    return numpy_image
+
+
+def normalize_image(image, min_hu=-1150, max_hu=350, to255=False):
+    # image = np.array(image, np.float)
+    image[image > max_hu] = max_hu
+    image[image < min_hu] = min_hu
+    image = (image - min_hu) / float(max_hu - min_hu)
+    image = image.astype(np.float32)
+    if to255:
+    	image = (image*255).astype(np.uint8)
+    return image
+
 def draw_contour(img, label, color=(0, 255, 0), line=1, text_infos=None, text_color=(0,0,128)):
 	_, contours, _ = cv2.findContours(label, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 	if len(contours) >= 0:
