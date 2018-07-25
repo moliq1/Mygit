@@ -1,0 +1,2 @@
+# Mygit
+some daily codes
