@@ -3,16 +3,6 @@ import cv2
 import matplotlib.pyplot as plt 
 
 
-def read_dcm_to_array(file_dir, min_hu=-1150, max_hu=350, normalize=True):
-    reader = sitk.ImageSeriesReader()
-    filenames = reader.GetGDCMSeriesFileNames(file_dir)
-    reader.SetFileNames(filenames)
-    sitk_image = reader.Execute()
-    numpy_image = sitk.GetArrayFromImage(sitk_image)
-    if normalize:
-        numpy_image = normalize_image(numpy_image)
-    return numpy_image
-
 
 def normalize_image(image, min_hu=-1150, max_hu=350, to255=False):
     # image = np.array(image, np.float)
@@ -57,8 +47,7 @@ def plot_3dimages_with_mask_contour(image, masks=None, folder='tmp', axis=-1, no
 	if not os.path.exists(folder):
 		os.makedirs(folder)
 	if normalize:
-		pass
-		#TODO
+		image = normalize_image(image, to255=True)	
 	if image.max() <= 1:
 		image = image*255
 	for i in range(image.shape[axis]):
